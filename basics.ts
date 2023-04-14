@@ -2,7 +2,7 @@
 
 // never keep both app.ts and app.js opened at the same time, otherwise you'll get errors that are related to the duplicity of code.
 
-// the core primitive types in TS are ALL lowercase (like string and not String).
+// the core primitive types in TS are ALL written in lowercase and they are: number, string, boolean, object, array, tuple, enum and any ('any' is very flexible, but avoid it whenever you can, otherwise you'd be just going back to the regular JS behavior and losing the advantages of TS types), some other types like 'Function' are written with the first letter capitalized.
 
 function add(n1: number, n2: number, showResult: boolean, phrase: string) {
   //  with TS this kind of manual type check bellow is not necessary in most cases, because we already specify the type of the variable at the beginning.
