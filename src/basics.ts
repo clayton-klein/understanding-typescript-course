@@ -4,7 +4,7 @@
 
 // the core primitive types in TS are ALL written in lowercase and they are: number, string, boolean, object, array, tuple, enum and any ('any' is very flexible, but avoid it whenever you can, otherwise you'd be just going back to the regular JS behavior and losing the advantages of TS types), some other types like 'Function' are written with the first letter capitalized.
 
-function add(n1: number, n2: number, showResult: boolean, phrase: string) {
+function add2(n1: number, n2: number, showResult: boolean, phrase: string) {
   //  with TS this kind of manual type check bellow is not necessary in most cases, because we already specify the type of the variable at the beginning.
 
   //   if (typeof n1 !== "number" || typeof n2 !== "number") {
@@ -23,7 +23,7 @@ function add(n1: number, n2: number, showResult: boolean, phrase: string) {
 let number1: number;
 number1 = 5;
 const number2 = 2.8;
-const printResult = true;
-const resultPhrase = "Result is: ";
+const logResult = true;
+let resultPhrase = "Result is: ";
 
-add(number1, number2, printResult, resultPhrase);
+add2(number1, number2, logResult, resultPhrase);
