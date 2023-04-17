@@ -1,4 +1,8 @@
-# TypeScript compiler and configuration:
+# General course's notes:
+
+⚠️ PS: Most of the notes/comments are in the `.ts` files themselves, here my intention was to add some comments that were not related to specifics files.
+
+## TypeScript compiler and configuration:
 
 - use `--watch` or `-w` at the end of the compilation command on the command line so TS will automatically recompile everytime there is a change (e.g: `tsc file.ts --watch`), the downside is that we can only "watch" one file at a time with this method.
 
@@ -11,5 +15,9 @@
 - it's common to create directories like **src** and **dist** to organize our files in a project, we can configure TS to use them with the **rootDir** and **outDir** options in the **tsconfig** file and this way when we run the `tsc` command, the files in the **rootDir** (e.g., src) will be compiled and generated in the **outDir** (e.g., dist).
 
 - we can remove the comments from our dist files by commenting in the **"removeComments"** option in the **tsconfig** file.
+
+- by default TS generates JS files after compilation even if we have errors, we could stop it by commenting in the **"noEmitOnError"** option in the **tsconfig** file.
+
+- you can comment in the options **noUnusedLocals, noUnusedParameters and noImplicitReturns** if you want TS to throw an error in case there are local (not global) variables or parameters that aren't being used or a function that can or cannot return something depending on a condition.
 
 - there are some other notes at the end of the **tsconfig.json** file as well.
