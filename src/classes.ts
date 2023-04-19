@@ -30,7 +30,7 @@ abstract class Department {
     // here we get an error, because fiscalYear is a static property, therefore it's not passed on to the instances of this class, therefore we cannot use the "this" keyword on it, because the "this" keyword refers to the object that is calling it and that instance object will not have access to this static property (or method if that's the case), because well it's static and belongs only to this class.
     console.log(this.fiscalYear);
 
-    // if we really want to access a static properties (or methods) inside this class where they were created or from an instance of this class we could fix the code above by dropping the "this" keyword and accessing it directly from the class name.
+    // if we really want to access static properties (or methods) inside this class where they were created or from an instance of this class, we could fix the code above by dropping the "this" keyword and accessing it directly from the class name.
     console.log(Department.fiscalYear);
   }
 
