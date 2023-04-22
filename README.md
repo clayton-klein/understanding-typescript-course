@@ -22,4 +22,4 @@
 
 <br>
 
-Este repositório contém os exercícios desenvolvidos duante o curso com meus comentários (em inglês) adicionados aos arquivos.
+Este repositório contém os exercícios desenvolvidos durante o curso com meus comentários (em inglês) adicionados aos arquivos.
