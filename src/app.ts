@@ -1,371 +1,297 @@
+// ============== General Info About Decorators ==================
 /**
- * ------------------ General Info About Generics -----------------------
+ * When to use "decorators"? Some cases are...
+ *  - Before/After hooks.
+ *  - Watch property changes and method calls.
+ *  - Transform parameters.
+ *  - Add extra methods or properties.
+ *  - Runtime type validation.
+ *  - Auto serialization and deserialization.
+ *  - Dependency Injection.
  *
- * In languages like C# and Java, one of the main tools in the toolbox for
- * creating reusable components is "generic types", that is, being able
- * to create a component (a class or a function) that can work over a
- * variety of types rather than a single one, this allows users to consume
- * these components and use their own types.
+ * Popular frameworks like Angular and Nest use decorators a lot.
  *
- * While using the type "any" is certainly generic in that it will cause
- * a function for example to accept any and all types for the type of the
- * parameter, we actually are losing the information about what that type
- * was when the function returns. If we passed in an array for example,
- * the only information we would get back is that any type could be
- * returned and it would prevent us from using "type-specific methods",
- * like ".map()" for example.
+ * To be able to use "decorators" we first need to set the 2 options
+ * in the tsconfig file, "target: ES6" and "experimentalDecorators:
+ * true", because at this moment decorators are a stage 2 proposal for
+ * JavaScript and are available as an experimental feature of
+ * TypeScript.
  *
- * So "generics" or "generic types" allows us to be flexible with our
- * the types we need and have "type check/safety" at the same time.
+ * Decorators in general are related to classes and its members and in
+ * the the end they're basically functions.
  *
- * To create a generic type we need to use angle brackets "<...>" right
- * after the function or class name and pass the generic "variable" name
- * of the type into it.
+ * There are five types of decorators we can use: Class Decorators,
+ * Property Decorators, Method Decorators, Accessor Decorators,
+ * Parameter Decorators.
  *
- * We could name the "variable" inside the brackets by any name, but by
- * convention we start it with the capital letter "T" and if we need more
- * generic types we follow the sequence of the alphabet (U, V, W...). This
- * "generic variable" works like a placeholder that holds the types of our
- * functions' parameters/returns or the properties/methods of our classes
- * and we can change it later if we need to be more specific about the
- * types we need (like <T> to <object> for example) or we can just let TS
- * define them automatically by inference.
+ * Decorators provide a way to add both annotations and a
+ * meta-programming syntax for class declarations and members.
  *
- * We can (and usually should) add "constraints" to our "generic types" to
- * make sure we get the type of the data we need, without it we could
- * receive any type of data as arguments in our functions or classes, like
- * a number or string instead of objects we may need.
+ * Applying decorators is a lot like composing a chain of
+ * functions, pretty much like higher-order function or class. With
+ * decorators, we can easily implement proxy pattern to reduce our
+ * code and do some cool things.
  *
- * We can add a constraint by "extending" the generic type, in the case of
- * the mergeObj function bellow it should be "object" on both parameters
- * (but it could even be a custom type and on just one parameter for
- * example) and if we try to pass anything different we should get an
- * error.
- * 
- * One common source of confusion is the difference between "generics" and 
- * "union" types. With "generics", once we set a type we have to stick to
- * it throughout all the way in our functions or classes and with "union" 
- * types we can always mix the types we set, it can sound great, but 
- * there are times when this is exactly what we DON'T want, so we use 
- * "generics" instead.
+ * Decorators are "executed only once" when a class is defined and
+ * not when it is instantiated, so we don't even need to instantiate a
+ * class to have a decorator being executed.
+ *
+ * The evaluation order of different types of decorators is well-defined:
+ *  1) Parameter Decorators, followed by Method, Accessor, or Property
+ * Decorators are applied for each instance member.
+ *  2) Parameter Decorators, followed by Method, Accessor, or Property
+ * Decorators are applied for each static member.
+ *  3) Parameter Decorators are applied for the constructor.
+ *  4) Class Decorators are applied for the class.
+ *
+ * We can apply multiple decorators to a single target. The evaluation
+ * order of the decorators composed is:
+ *  1) Outer Decorator Evaluate.
+ *  2) Inner Decorator Evaluate.
+ *  3) Inner Decorator Call.
+ *  4) Outer Decorator Call.
  */
 
-// ------------------------ Example 1 ---------------------------------
+// ============== Class Decorator ==================
 /**
- * By "extending" the "generic types" in the function mergeObj bellow,
- * basically what we're saying is that instead of the "parameters" of this
- * function be of the "object" type and return an "unknown" object or
- * instead of trying to be even more specific saying that they should
- * literally receive an object with the property "name" of the type
- * string" for example, we're just saying (on the definition of the
- * "generic type") that the parameters can (and probably will) receive
- * different objects with probably different "types" of properties in them
- * and the "return" should just be the intersection of those types and
- * then we assign the "generic types" as the type of the parameters.
- *
- * Without this "constraint" the app would "fail silently" in this case,
- * since it would be ok to accept any data type and what we really need
- * are objects.
- *
- * Pay attention to what we did on the mergeObj function bellow, first we
- * defined the "generic type variables" inside de angle brackets (it can
- * be any object, but it must be an object), then we assigned those
- * "variables" as the types of the paremeters and the same can be done with
- * classes and their properties and methods.
+ * This function is a "class decorator", it's not necessarily a
+ * convention, but it's common to see the name of the decorators
+ * starting with a capital letter.
  */
-function mergeObj<T extends object, U extends object>(obj1: T, obj2: U) {
-  return Object.assign({}, obj1, obj2);
+function Logger(constructor: Function) {
+  console.log("Logging...");
+  console.log(constructor);
 }
 
 /**
- * Here we passed to the function objects with different properties and
- * data types and TS infers the return value automatically (hover over the
- * name of the function to see).
- */
-const mergedObj = mergeObj({ name: "Clayton" }, { age: 36 });
-console.log(mergedObj);
-
-/**
- * Here, without the generic types, we wouldn't be able to access the
- * properties of the newly created object, because TS wouldn't know them,
- * it would just know that "mergedObj" is of type "object" and the
- * property "name" doesn't exist on type object, so we would get an error.
- */
-console.log(mergedObj.name);
-
-// ------------------------ Example 2 ---------------------------------
-// Creating an interface with the property "length".
-interface Lengthy {
-  length: number;
-}
-
-/**
- * Bellow we created a function where we don't care about the argument it
- * receives (generic type) as long as it has the "length" property in it.
+ * Here we're using the "class decorator", the "@" symbol is an
+ * special identifier that TS recognizes and directly in front of it
+ * we should point to a function (the decorator) without the "()";
  *
- * We're also extending our generic "T" type to inherit from the "Lengthy"
- * interface and we're constraining the returned value of the function to
- * be a "tuple" with 2 values, where the first one must match the type
- * "Lengthy" and the second one must be a "string".
+ * Except for the "parameter decorator", we must ALWAYS use decorators right above
+ * the name of the "member" (class, property, method, accessor) we want to
+ * use it on.
  */
-function countAndShowLength<T extends Lengthy>(element: T): [T, string] {
-  let descriptionText = "Got no value.";
+@Logger
+class Person {
+  firstName = "Clayton";
 
-  if (element.length === 1) {
-    descriptionText = "Got 1 element";
-  } else if (element.length > 0) {
-    descriptionText = `Got ${element.length} elements.`;
+  constructor() {
+    console.log("Creating Person object...");
   }
-
-  return [element, descriptionText];
 }
 
-console.log(countAndShowLength([]));
-console.log(countAndShowLength({ length: 1 }));
-console.log(countAndShowLength(["hobbies", "skills"]));
-console.log(countAndShowLength("Howdy mate!"));
-
-// It doesn't have the "length" property, so it won't work.
-console.log(countAndShowLength(true));
-
-// --------------------- KEYOF CONSTRAINT --------------------------
+const person1 = new Person();
 
 /**
- * On the function bellow at first we got an error, because we defined the
- * type of the first param as object and the type of the second as string,
- * but it's not garanteed that the object will have the key that we'll
- * pass to the function.
+ * The decorator's message and the class itself will be logged first,
+ * then the constructor's message and only then the instance of the
+ * class.
  */
-function extractAndConvert(obj: object, key: string) {
-  // Here the function doesn't know if this key exist in the obj.
-  return `Value: ${obj[key]}`;
-}
+console.log(person1);
 
+// ============== Decorator Factory ==================
 /**
- * Here we got "undefined" for trying to access a property that
- * doesn't exist in the object and TS is not alerting us about it...
- */
-console.log(extractAndConvert({ name: "Clayton" }, "age"));
-
-/**
- * So here what we did to solve the problem above was to use a generic
- * type "T" for the first param that extends object and another generic
- * type "U" for the second param that extends "keyof" type "T", it ensures
- * that the second param must be a key inside the object passed as the
- * first param to the function.
- */
-function extractAndConvert2<T extends object, U extends keyof T>(
-  obj: T,
-  key: U
-) {
-  // Now the function knows if the key exists or not in the "obj".
-  return `Value: ${obj[key]}`;
-}
-
-/**
- * And here we got an error, because the property name doesn't exist
- * in this empty object.
- */
-extractAndConvert2({}, "name");
-
-// Now it works!
-console.log(extractAndConvert2({ name: "Clayton" }, "name"));
-
-// --------------------- GENERIC CLASSES --------------------------
-
-/**
- * Bellow we created a class with just one generic type "T" for the sake
- * of simplicity, but it could be more, we could have methods with their
- * own different generic types for example.
+ * A decorator factory returns a decorator function, but it allows us
+ * to configure it when we assign it as a decorator to something.
  *
- * If we wanted to constrain the types accepted by this class it would go
- * like this for example:
- * class DataStorage<T extends number | string | boolean> {
+ * Now we can have a parameter in the decorator and pass to it the
+ * message to log when we call it on the class.
  */
-class DataStorage<T> {
-  // Data will receive an array of the generic type "T".
-  private data: T[] = [];
+function LoggerFactory(logString: string) {
+  console.log("Logger Factory...");
 
-  // The parameters will also receive arguments of the generic type "T".
-  addItem(item: T) {
-    this.data.push(item);
+  return function (constructor: Function) {
+    console.log(logString);
+    console.log(constructor);
+  };
+}
+
+/**
+ * We need to execute (use the parenthesis) it as a regular
+ * function in this case, then the "outer" function "LoggerFactory"
+ * will return the attached value (wich is another function) as the
+ * decorator to this class.
+ *
+ * The advantage is that now we can and pass in arguments to be used
+ * in the returned "inner" decorator function.
+ */
+@LoggerFactory("Logging: personFactory")
+class Person2 {
+  firstName = "João";
+
+  constructor() {
+    console.log("Creating Person2 object...");
   }
+}
 
-  removeItem(item: T) {
-    /**
-     * If we can't find an index that matches the one we want to delete
-     * then just return so the code after the "if" won't be executed.
-     */
-    if (this.data.indexOf(item) === -1) {
-      return;
+const personFactory = new Person2();
+console.log(personFactory);
+
+/**
+ * The decorator bellow is an example of "meta programming", because
+ * we're creating a decorator (tool) that could be exposed for other
+ * developers to use by adding it to a class, otherwise it would do
+ * nothing and that is what some frameworks do (in a more elaborated
+ * way ofc).
+ */
+function WithTemplate(template: string, hookId: string) {
+  /**
+   * The parameter "underscore" means that we know we'll receive an
+   * argument, but we won't need it, in this case we have to specify
+   * a variable name for the parameter and if we used any other name
+   * TS would complain about declaring a variable not using it later.
+   */
+  return function (_: Function) {
+    console.log("Rendering Template...");
+    const hookEl = document.getElementById(hookId);
+
+    if (hookEl) {
+      hookEl.innerHTML = template;
     }
+  };
+}
 
-    /**
-     * This would return -1 and remove the last element of the array if
-     * it couldn't find one that matched with the index we passed to the
-     * function (default behavior of the method "indexOf").
-     */
-    this.data.splice(this.data.indexOf(item), 1);
-  }
+/**
+ * We can add multiple decorators anywhere in our classes, but they
+ * have a specific order they run, basically from bottom to top (see
+ * line 47).
+ */
+@LoggerFactory("Logging with multiple decorators")
+@WithTemplate("<h2>This was created by a decorator function.</h2>", "app")
+class Person3 {
+  firstName = "Maria";
 
-  /**
-   * By inference TS will return an array of the generic type "T" (hover
-   * over the function name to see it).
-   */
-  getItems() {
-    return [...this.data];
+  constructor() {
+    console.log("Creating Person3 object...");
   }
 }
 
-// ------------- textStorage instance ---------------
+const personTemplate = new Person3();
+console.log(personTemplate);
+
+// ============== Property Decorator ==================
 /**
- * Here we're "transforming" the generic type "T" into the type "string",
- * but we could also use a union type like "string|number" for example or
- * even a custom one.
+ * When we add a decorator to a property, the decorator receive 2
+ * arguments (target and propertyName, but they don't need to have
+ * these names), if we use a decorator on an instance property
+ * the target will be the "prototype" of the object that was created
+ * and if we had a "static" property then target would refer to the
+ * "constructor" function instead.
  */
-const textStorage = new DataStorage<string>();
+function LogProperty(target: any, propertyName: string | Symbol) {
+  console.log("Property decorator.");
+  console.log(target, propertyName);
+}
 
-// And here we get an error for trying to add a number (see line 159).
-textStorage.addItem(10);
-
-textStorage.addItem("PlayStation");
-textStorage.addItem("Xbox");
-textStorage.addItem("Nintendo");
-textStorage.removeItem("Nintendo");
-
+// ============== Accessor (get/set) Decorator ==================
 /**
- * The code bellow will log the number 10 in the array, because remember,
- * in the end TS will be transpiled to JS and unless we configure TS to
- * not transpile while there are errors, it will just alert us about them
- * during development, for vanilla JS this is perfectly ok.
- */
-console.log(textStorage);
-
-// ------------- objStorage instance ---------------
-/**
- * On the instance bellow we changed the generic type "T" to "object".
+ * When we add a decorator to an accessor, the decorator receive 3
+ * arguments (target, name and descriptor), if we use the decorator
+ * on an instance property the "target" will be the "prototype" of
+ * the object that was created and if we had a "static" property
+ * then target would refer to the "constructor" function instead,
+ * the "name" refers to the name of the accessor and the descriptor
+ * refers to the "property descriptor" of the member in which the
+ * decorator was applied to.
  *
- * At first we tried to make it work by passing the objects directly
- * into de functions, but objects are passed by reference and not by
- * value, so the methods weren't working properly to delete the itens,
- * since the references would always be different.
- *
- * The solution was to store the objects into variables and then to pass
- * the variables into the functions.
- *
- * We could constrain the types of the DataStorage class to only work with
- * primitive values (number, string, boolean) to avoid this kind of
- * problem (see line 176), then the type "object" would not be allowed
- * anymore.
+ * Here we also used a special TS type for the desciptor.
  */
-const objStorage = new DataStorage<object>();
+function LogAccessor(
+  target: any,
+  name: string,
+  descriptor: PropertyDescriptor
+) {
+  console.log("Accessor decorator.");
+  console.log(target);
+  console.log(name);
+  console.log(descriptor);
+}
+
+// ============== Method Decorator ==================
 /**
- * The objects on the 2 lines bellow look similar, but they have different
- * references in memory and that's why it wouldn't work properly.
+ * "Method decorators" also receive the same 3 arguments that "accessor decorators"
+ * do, just the "descriptor" is a bit different, since it's a method and not an
+ * accessor.
  */
-// objStorage.addItem({ name: "shirt" });
-// objStorage.removeItem({ name: "shirt" });
+function LogMethod(
+  target: any,
+  name: string | Symbol,
+  descriptor: PropertyDescriptor
+) {
+  console.log("Method decorator.");
+  console.log(target);
+  console.log(name);
+  console.log(descriptor);
+}
 
-// And that's how we should solve the reference problem.
-const shirt = { name: "shirt" };
-const trousers = { name: "trousers" };
-
-objStorage.addItem(shirt);
-objStorage.addItem(trousers);
-
-console.log(objStorage.getItems());
-
-objStorage.removeItem(shirt);
-console.log(objStorage.getItems());
-
-objStorage.removeItem(trousers);
-console.log(objStorage.getItems());
-
-// --------------- TS Built-In Utility Types Examples ----------------
+// ============== Parameter Decorator ==================
 /**
- * TypeScript provides several utility generic types to facilitate common
- * type transformations, they are available globally.
- *
- * Here we'll see just 2 examples, just be aware that these are TS
- * features only, they would not transpile to JS for example and should be
- * used only for development, like many other TS features.
- *
- * At this moment (04/2023) there are 22 utility types in TS, we can see
- * all of them and waht they do at:
- * https://www.typescriptlang.org/docs/handbook/utility-types.html
+ * "Parameter decorators" also receive 3 arguments, "target" is the same as the
+ * others above, "name" refers to the name of the function where it was used and
+ * "position" refers to the index of the parameter inside the function.
  */
+function LogParameter(target: any, name: string | Symbol, position: number) {
+  console.log("Parameter decorator.");
+  console.log(target);
+  console.log(name);
+  console.log(position);
+}
 
-// --------------- Partial<Type>:
-/**
- * Constructs a type with all properties of Type set to optional, this
- * utility will return a type that represents all subsets of a given type.
- */
-interface CourseGoal {
+// ============== Using Decorators ==================
+class Product {
+  /**
+   * This "LogProperty" decorator executes even though we didn't instantiate
+   * the "Product" class and that's because (as we saw earlier),
+   * decorators are executed when classes are defined, not necessarily
+   * when they are instantiated.
+   */
+  @LogProperty
   title: string;
-  description: string;
-  completeUntil: Date;
-}
-
-function createCourseGoal(
-  title: string,
-  description: string,
-  date: Date
-): CourseGoal {
-  /**
-   * We could just do it like we did bellow and it would work, but let's
-   * say that for any reason we need to do it step by step, maybe we have
-   * some kind of check before assigning each data.
-   */
-  // return {
-  //   title: title,
-  //   description: description,
-  //   completeUntil: date,
-  // };
-
-  let courseGoal: Partial<CourseGoal> = {};
-  courseGoal.title = title;
-  courseGoal.description = description;
-  courseGoal.completeUntil = date;
+  private _price: number;
 
   /**
-   * First we wouldn't be able to assign the data to the properties,
-   * because they would not be available to the empty object that we
-   * initialized the "courseGoal" variable with (at least not in TS,
-   * because in JS it would be ok in this case).
+   * TypeScript disallows decorating both the "get" and "set" accessor
+   * for a single member. Instead, all decorators for the member must
+   * be applied to the first accessor specified in document order.
+   * This is because decorators apply to a "Property Descriptor", which
+   * combines both the get and set accessor, not each declaration
+   * separately.
    *
-   * Then we tried to assign just the type "CourseGoal" to the variable
-   * but TS complained again, because the object is empty and not with the
-   * same signature of the interface.
-   *
-   * To solve the problem we used the "Partial" generic utility type
-   * holding the "CourseGoal" type and what it does is to tell TS that
-   * the empty object will be in the end a "CourseGoal" object.
-   *
-   * The Partial type kind of wraps our own type and changes all their
-   * properties to optional temporarily and that's why the empty object is
-   * not a problem anymore.
-   *
-   * In the end we had to use type casting on the return value to convert
-   * the "courseGoal" variable type, otherwise the type would still be
-   * Partial<CourseGoal> and not CourseGoal and we would have another
-   * error.
+   * If the accessor decorator returns a value, it will be used as the Property
+   * Descriptor for the member.
    */
+  @LogAccessor
+  set price(val: number) {
+    if (val > 0) {
+      this._price = val;
+    } else {
+      throw new Error("Invalid price - it should be a positive value!");
+    }
+  }
 
-  return courseGoal as CourseGoal;
+  constructor(t: string, p: number) {
+    this.title = t;
+    this._price = p;
+  }
+
+  @LogMethod
+  /**
+   * We use "parameters decorators" before the name of the parameter in the function,
+   * and it's possible to have different decorators on different parameters in the
+   * same function.
+   */
+  getPriceWithtax(@LogParameter tax: number) {
+    return this._price * (1 + tax);
+  }
 }
 
-// --------------- Readonly<Type>:
 /**
- * It constructs a type with all properties of that type set to readonly,
- * meaning the properties of the constructed type cannot be reassigned.
- *
- * Bellow we created a variable with the type "Readonly<string[]>" that
- * will hold an array of strings and then we tried to add and remove items
- * from it, technically it will work, because it's ok to do that in JS, but
- * now TS at least warns us with an error and depending on our tsconfig
- * it wouldn't even transpile.
+ * The decorators won't execute again just because we instanciated the class, they 
+ * only execute once when the class is defined.
  */
-const names: Readonly<string[]> = ["Clayton", "Bruna", "Jack"];
-names.push("Sarah");
-names.pop();
-console.log(names);
+const videoGame = new Product("PS5", 3500);
+console.log(videoGame);
+
+const laptop = new Product("Alienware", 13300);
+console.log(laptop);
