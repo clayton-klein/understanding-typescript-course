@@ -37,7 +37,8 @@ function printResult2(num: number): undefined {
 */ 
 let combineValuesExample: Function;
 
-/** Now here we're being explicit about the 'signature' of the type of the 
+/** 
+ * Now here we're being explicit about the 'signature' of the type of the 
  * function we expect to receive in this variable (the sintax is similar 
  * to an arrow func).
 */ 

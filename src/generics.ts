@@ -291,7 +291,7 @@ console.log(objStorage.getItems());
  * used only for development, like many other TS features.
  *
  * At this moment (04/2023) there are 22 utility types in TS, we can see
- * all of them and waht they do at:
+ * all of them and waht they do at: 
  * https://www.typescriptlang.org/docs/handbook/utility-types.html
  */
 
