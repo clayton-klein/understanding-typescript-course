@@ -1,12 +1,23 @@
 // ================== GENERAL TS INFO =========================
 /**
+ * TypeScript extends JavaScript and improves the developer 
+ * experience. It enables developers to add type safety to their 
+ * projects. Moreover, TypeScript provides various other features, 
+ * like interfaces, type aliases, abstract classes, function 
+ * overloading, tuple, generics, etc.
+ * 
+ * TypeScript simplifies JavaScript code, making it easier to read
+ * and debug and consequently it improves productivity.
+ * 
  * TypeScript is used for development ONLY, browsers don't run TS so we
- * should always compile it to regular JavaScript for production.
+ * should always compile/transpile it to regular JavaScript for 
+ * production.
  * 
- * Never keep both app.ts and app.js opened at the same time, otherwise
- * you'll get errors that are related to the duplicity of code.
+ * Never keep both your "file.ts" and "file.js" opened at the same
+ * time, otherwise you'll get errors that are related to the duplicity 
+ * of code.
  * 
- * The core primitive types in TS are ALL written in lowercase and they
+ * The core primitive types in TS are all written in lowercase and they
  * are: number, string, boolean, object, array, tuple, enum and any
  * ('any' is very flexible, but avoid it whenever you can, otherwise
  * you'd be just going back to the regular JS behavior and losing the
