@@ -23,3 +23,5 @@
 <br>
 
 Este repositório contém os exercícios desenvolvidos durante o curso com meus comentários (em inglês) adicionados aos arquivos.
+
+Obs: Altere o `src` da tag `<script>` em **index.html** para o nome do arquivo **.js** no qual você deseja visualizar os resultados.
